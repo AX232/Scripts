@@ -1,0 +1,36 @@
+#!/usr/bin/expect -f
+
+set timeout 2
+
+set timeout 2
+set username [lindex $argv 0]
+set password [lindex $argv 1]
+set hostname [lindex $argv 2]
+set command [lindex $argv 3]
+
+
+set wipe01 "sys atcr"
+set wipe02 "zycli reboot"
+
+if {[llength $argv] == 0} {
+  send_user "\nThis script will return the VMG8825-B50B to the SPECTRUM configured default and then reboot it.\n"
+  send_user "\nUsage: ./zwipe Username Password IP\n"
+  send_user "Example: ./zwipe admin BF38M4C4 192.168.1.1\n"
+  exit 1
+}
+
+spawn ssh $username@$hostname
+
+match_max 100000
+expect "password:"
+send -- "$password\r"
+expect "ZySH>"
+send -- "$wipe01\r"
+expect "ZySH>"
+send -- "$wipe02\r"
+expect "ZySH>"
+
+
+
+send -- "exit\r"
+expect eof

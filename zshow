@@ -1,0 +1,45 @@
+#!/usr/bin/expect -f
+
+set timeout 2
+
+
+set timeout 2
+set username [lindex $argv 0]
+set password [lindex $argv 1]
+set hostname [lindex $argv 2]
+
+set shcmd01 "cfg trust_domain get"
+set shcmd02 "cfg wan get"
+set shcmd03 "cfg mgmt_srv get"
+set shcmd04 "cfg user_account get"
+set shcmd05 "zycli sfp show"
+set shcmd06 "cfg qos get"
+
+
+if {[llength $argv] == 0} {
+  send_user "\nUsage: ./zshow Username Password IP\n"
+  send_user "Example: ./zshow admin BF38M4C4 192.168.1.1\n"  
+exit 1
+}
+
+spawn ssh $username@$hostname
+
+match_max 100000
+expect "password:"
+send -- "$password\r"
+expect "ZySH>"
+send -- "$shcmd01\r"
+expect "ZySH>"
+send -- "$shcmd02\r"
+expect "ZySH>"
+send -- "$shcmd03\r"
+expect "ZySH>"
+send -- "$shcmd04\r"
+expect "ZySH>"
+send -- "$shcmd05\r"
+expect "ZySH>"
+send -- "$shcmd06\r"
+expect "ZySH>"
+
+send -- "exit\r"
+expect eof

@@ -1,0 +1,39 @@
+#!/usr/bin/expect -f
+
+set timeout 2
+
+set timeout 2
+set username [lindex $argv 0]
+set password [lindex $argv 1]
+set hostname [lindex $argv 2]
+set command [lindex $argv 3]
+
+
+set wipe01 "zycli save_default clean"
+set wipe02 "sys atcr"
+set wipe03 "zycli reboot"
+
+if {[llength $argv] == 0} {
+  send_user "\nThis script will return the VMG8825-B50B to it's ORIGINAL factory defaults and then reboot it.\n"
+  send_user "\nUsage: ./zfactory8026 Username Password LANIP\n"
+  send_user "Example: ./zfactory8026 admin BF38M4C4 192.168.1.1\n" 
+  exit 1
+}
+
+spawn ssh $username@$hostname -p 8026
+
+match_max 100000
+expect "password:"
+send -- "$password\r"
+expect "ZySH>"
+send -- "$wipe01\r"
+expect "ZySH>"
+send -- "$wipe02\r"
+expect "ZySH>"
+send -- "$wipe03\r"
+expect "ZySH>"
+
+
+
+send -- "exit\r"
+expect eof

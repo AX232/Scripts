@@ -1,0 +1,74 @@
+#!/usr/bin/expect -f
+
+set timeout 2
+
+set timeout 2
+set username [lindex $argv 0]
+set password [lindex $argv 1]
+set hostname [lindex $argv 2]
+set arg3 [lindex $argv 3]
+set arg4 [lindex $argv 4]
+set arg5 [lindex $argv 5]
+set arg6 [lindex $argv 6]
+
+set prov01 "cfg trust_domain add --IPAddressPrefix 91.194.46.0/27"
+set prov02 "cfg trust_domain add --IPAddressPrefix 91.194.47.0/28"
+set prov03 "cfg trust_domain add --IPAddressPrefix 194.150.200.0/27"
+set prov04 "cfg trust_domain add --IPAddressPrefix 194.150.201.0/27"
+set prov05 "cfg user_account add --Username Supervisor --Password Password1 --verifyNewpassword Password1 --group Administrator"
+set prov06 "cfg wan delete --Name ADSL"
+set prov07 "cfg wan delete --Name VDSL"
+set prov08 "cfg wan delete --Name ETHWAN"
+set prov09 "cfg wan add --Name FULLFIx --Type ETH --Mode IP_Routed --ipMode IPv4 --ipStatic 1 --IPAddress $arg3 --SubnetMask $arg4 --GatewayIPAddress $arg5 --ipDnsStatic 1 --DNSServer 8.8.8.8,8.8.4.4 --NatEnable 1 --Enable 1 --sysGwEnable 1"
+set prov10 "cfg qos edit --Enable 1 --AutoMapType PacketLength --UpRate $arg6"
+set prov11 "cfg mgmt_srv edit --Index 6 --Mode LAN_TstDm --WAN_Interface Any_WAN"
+set prov12 "cfg mgmt_srv edit --Index 7 --Mode LAN_TstDm --WAN_Interface Any_WAN"
+set prov13 "cfg mgmt_srv edit --Index 2 --Mode LAN_TstDm --WAN_Interface Any_WAN --Port 8024"
+set prov14 "cfg mgmt_srv edit --Index 5 --Mode LAN_TstDm --WAN_Interface Any_WAN --Port 8026"
+
+
+
+if {[llength $argv] == 0} {
+  send_user "\nThis script will provision an out-of-the-box ZyXEL VMG8825-B50B for a new Spectrum Internet subscriber.\n\n"
+  send_user "Usage:   ./zprov Username Password LANIP WANIP WANSUBNETMASK WANGATEWAY UPSTREAMSPEED-in-kbps\n"
+  send_user "Example: ./zprov admin BF38M4C4 192.168.1.1 1.1.1.2 255.255.255.252 1.1.1.1 10000\n"  
+exit 1
+}
+
+spawn ssh $username@$hostname
+
+match_max 100000
+expect "password:"
+send -- "$password\r"
+expect "ZySH>"
+send -- "$prov01\r"
+expect "ZySH>"
+send -- "$prov02\r"
+expect "ZySH>"
+send -- "$prov03\r"
+expect "ZySH>"
+send -- "$prov04\r"
+expect "ZySH>"
+send -- "$prov05\r"
+expect "ZySH>"
+send -- "$prov06\r"
+expect "ZySH>"
+send -- "$prov07\r"
+expect "ZySH>"
+send -- "$prov08\r"
+expect "ZySH>"
+send -- "$prov09\r"
+expect "ZySH>"
+send -- "$prov10\r"
+expect "ZySH>"
+send -- "$prov11\r"
+expect "ZySH>"
+send -- "$prov12\r"
+expect "ZySH>"
+send -- "$prov13\r"
+expect "ZySH>"
+send -- "$prov14\r"
+#expect "ZySH>"
+
+#send -- "exit\r"
+expect eof

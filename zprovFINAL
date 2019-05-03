@@ -1,0 +1,30 @@
+#!/usr/bin/expect -f
+
+set timeout 2
+
+set timeout 2
+set username [lindex $argv 0]
+set password [lindex $argv 1]
+set hostname [lindex $argv 2]
+
+set fprov "zycli save_default save"
+
+
+if {[llength $argv] == 0} {
+  send_user "\nThis script will save the current config to ROMD.\n"
+  send_user "\nUsage: ./zprovFINAL Username Password IP\n"
+  send_user "Example: ./zprovFINAL admin BF38M4C4 192.168.1.1\n"
+  exit 1
+}
+
+spawn ssh $username@$hostname -p 8026
+
+match_max 100000
+expect "password:"
+send -- "$password\r"
+expect "ZySH>"
+send -- "$fprov\r"
+expect "ZySH>"
+
+send -- "exit\r"
+expect eof
